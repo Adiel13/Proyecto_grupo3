@@ -1,0 +1,152 @@
+
+#top {
+    background-color: #FFFFFF;
+    color: white;
+    float:left; 
+    margin-top: 60px;
+}
+
+#bannertitle {
+    position: relative;
+    background-color: #0b9444;
+    padding: 0px;
+    margin: 0px 0px 10px 0px;
+    height: 40px;
+}
+
+#banner {
+    position: relative;
+    background-color: #FFFFFF;
+    color: white;
+    padding: 0px;
+    margin: 0px 0px 0px 0px;
+    min-height: 100px;
+}
+.containerMain{
+    width: 1200px;
+    margin-right: auto;
+    margin-left: auto;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+#bottom {
+    position: relative;
+    background-color: #0D5431;
+    padding: 5px;
+    margin: 10px 0px 0px 0px;
+}
+
+#left {
+    float: left;
+    background-color: #ece3a5;
+    padding: 5px;
+    width: 100px;
+}
+
+#right {
+    float: right;
+    background-color: #ece3a5;
+    padding: 5px;
+    width: 150px;
+}
+
+.center_content {
+    position: relative;
+    padding: 5px;
+    width: 85%;
+    margin-top: 30px;
+    min-height: 600px;
+}
+
+.welcome {
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    line-height: normal;
+    font-weight: bold;
+    font-variant: normal;
+    color: #023050;
+}
+
+.left_content {
+    background-color: #dddddd;
+    padding: 5px;
+    margin-left: 170px;
+}
+
+.right_content {
+    background-color: #dddddd;
+    padding: 5px;
+    margin: 0px 170px 0px 170px;
+}
+
+#top a:link, #top a:visited {
+  color: black;
+  font-weight : bold;
+  text-decoration: none;
+}
+
+#top a:link:hover, #top a:visited:hover  {
+  color: black;
+  font-weight : bold;
+  text-decoration : underline;
+}
+
+.white-button.ui-button.ui-state-default {
+        background-color: #ffffff;
+        color: #222222;
+        border-color: #d6d6d6;
+    }
+ 
+    .white-button.ui-button.ui-state-default:enabled:hover, 
+    .white-button.ui-button.ui-state-default:focus {
+        background-color: #f2f2f2;
+        border-color: #ccc;
+        color: #373a3c;
+    }
+ 
+    .green-button.ui-button.ui-state-default {
+        background-color: #5cb85c;
+        border-color: #5cb85c;
+        color: #fff;
+    }
+ 
+    .green-button.ui-button.ui-state-default:enabled:hover, 
+    .green-button.ui-button.ui-state-default:focus {
+        background-color: #4cae4c;
+        border-color: #5cb85c;
+    }
+ 
+    .red-button.ui-button.ui-state-default {
+        background-color: #d9534f;
+        border-color: #d9534f;
+        color: #fff;
+    }
+ 
+    .red-button.ui-button.ui-state-default:enabled:hover, 
+    .red-button.ui-button.ui-state-default:focus {
+        background-color: #d43f3a;
+        border-color: #d9534f;
+    }
+    .ui-widget-content.ui-datagrid-content{
+            border: none;
+    }
+    .ui-widget-content {
+    border: 1px solid #dddddd;
+    background: #ffffff !important;
+    color: #362b36;
+}
+
+.ui-outputlabel-rfi{
+    color:red;
+}
+
+.ui-widget-header{
+    background: #deedf7  url("/GestionProcesosCES/javax.faces.resource/images/ui-bg_highlight-soft_100_deedf7_1x100.png.ces?ln=primefaces-cupertino") 50% 50% repeat-x !important;
+    border: 1px solid #aed0ea!important;
+    color: #222222;
+    font-weight: bold;
+    
+}
+

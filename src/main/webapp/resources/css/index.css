@@ -1,0 +1,54 @@
+#principal{
+    width: 1024px;
+    margin: 0 auto;
+    background: #ffffff;
+}
+
+.form {
+  position: relative;
+  z-index: 1;
+  background: #efefef;
+  max-width: 300px;
+  margin: 0 auto 100px;
+  padding: 30px;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  text-align: center;
+}
+
+.form .thumbnail {
+  background: #4cae4c;
+  width: 150px;
+  height: 150px;
+  margin: 0 auto 30px;
+  padding: 50px 30px;
+  border-top-left-radius: 100%;
+  border-top-right-radius: 100%;
+  border-bottom-left-radius: 100%;
+  border-bottom-right-radius: 100%;
+  box-sizing: border-box;
+}
+
+.form .thumbnail img {
+  display: block;
+  width: 100%;
+}
+
+#cuadro{
+    margin: 100px auto;
+    width: 40%;
+    text-align: center;
+}
+
+.ui-widget-header{
+    background: #0b9444 url("/GestionProcesosCES/javax.faces.resource/images/ui-bg_highlight-hard_15_459e00_1x100.png.xhtml?ln=primefaces-south-street") 50% 50% repeat-x;
+}
+
+#bottom {
+    position: relative;
+    background-color: #0D5431;
+    padding: 5px;
+    margin: 10px 0px 0px 0px;
+}
