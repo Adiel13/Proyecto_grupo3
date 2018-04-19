@@ -7,25 +7,11 @@ package com.MATIC.controller;
 
 
 import com.MATIC.controller.util.Connection;
-import java.io.IOException;
 import java.io.Serializable;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
-import javax.faces.context.Flash;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
-import javax.naming.*;
-import javax.naming.directory.*;
-import javax.servlet.http.HttpServletRequest;
 
 /**
  *
