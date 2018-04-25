@@ -67,6 +67,8 @@ and open the template in the editor.
                            
                             <p:commandButton value="Agregar" icon="ui-icon-check" update=":frmPrincipal:tabViw:tablaImagenes" onclick="PF('wdialogoImagenes').hide();" actionListener="#{indexController.azure()}" 
                              rendered="#{indexController.accion == 'R'}"/>
+                            
+                              <p:commandButton value="Cancelar" icon="ui-icon-close" immediate="true" onclick="PF('wdialogoImagenes').hide();" />	
                          
                         </h:panelGrid>
                     </h:form>
