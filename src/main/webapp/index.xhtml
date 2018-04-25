@@ -1,33 +1,78 @@
-<?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
     <h:head>
-        <title>Facelet Title</title>
+        <title>Cargar Imagen</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <h:outputScript library="js" name="spanishLocales.js"/>
     </h:head>
-    <h:body>
-        <div id="bannertitle"></div>
-        <div id="banner">
-            <div class="containerMain">
-          
-                <div id="top">
-                    <h:form>
-                        <h:graphicImage width="200" height="45" library="images" name="matic_img.png" />
-                        <p:menubar >
-                            <p:menuitem value="Prueba rama"/>
-                            <p:menuitem value="Cargar Datos"/>
-                            <p:menuitem value="Graficas"/>
-                            <p:menuitem value="Imagenes"/>
-                        </p:menubar> 
-                       <p:separator/>
-                    <p:commandButton icon="ui-icon-key" value="Provar conexion" action="#{indexController.probarConexion()}"/>
-                    <p:commandButton icon="ui-icon-link" value="Provar azure" action="#{indexController.azure()}"/>
-                   
-                    </h:form>
-                </div>
-            </div>
-        </div>
-    </h:body>
-</html>
+    <body>
 
+        <ui:composition template="./WEB-INF/templates/plantilla.xhtml">
+            <ui:define name="content">
+                <h:form id="frmPrincipal">
+                    <p:tabView id="tabViw" widgetVar="tabViw" dynamic="true" cache="true" >
+                        <p:growl id="mensaje" autoUpdate="false" severity="info,fatal" showSummary="true" showDetail="true"/>
+                       <p:tab title="CATALOGO DE ARCHIVOS">
+                            <p:fieldset legend="LISTA DE FOTOGRAFIAS INDEXADAS" style="margin: 20px">
+                              
+                                <p:commandButton icon="ui-icon-plusthick" value="Nuevo" actionListener="#{indexController.mostrarDialogoImagenes()}" style="margin:10px" update=":frmDialogoImagenes"/>
+                                <p:dataTable id="tablaImagenes" emptyMessage="No existe ninguna Imagen indexada"  var="pro">
+                                    <p:column headerText="Nombre" >
+                                        <h:outputText value="" />
+                                    </p:column>
+                                    <p:column headerText="Analizar" >
+                                        <p:commandLink   update=":frmDialogoImagenes">
+                                            <h:graphicImage library="images" name="user.png" />
+                                        </p:commandLink> 
+                                    </p:column>
+                                </p:dataTable>
+                               
+                            
+                            </p:fieldset>
+                            <p:separator />
+                            <div style="width: 100%; height: 30px;">
+                           
+                            </div>
+                        </p:tab>
+                            <p:tab title="RESULTADO DE GRAFICAS">
+                         
+                            <p:separator />
+                            <div style="width: 100%; height: 30px;">
+                           
+                            </div>
+                        </p:tab>
+                    </p:tabView>
+                </h:form>
+                       
+                 <p:dialog id="dialogoImagenes" widgetVar="wdialogoImagenes" header="Nuevo (Imagen indexada)" modal="true" resizable="false" closeOnEscape="true" draggable="false">
+                    <h:form id="frmDialogoImagenes" enctype="multipart/form-data">
+                       <p:fileUpload value="#{indexController.uploadFile}" mode="advanced"
+                                      fileUploadListener="#{indexController.handleFileUpload}" update="rutaarchivo"></p:fileUpload>
+                        <h:panelGrid columns="2" id="pgD1" style="margin-bottom:10px" cellpadding="2"> 
+                            <p:outputLabel for="nombreArchivo" value="Título de la Imagen"/>
+                            <p:inputText id="nombreArchivo" value="#{indexController.nombre}" readonly="false" required="true"/>
+                            
+                             <p:outputLabel for="rutaarchivo" value="Ruta del Archivo"/>
+                             <p:inputText id="rutaarchivo" value="#{indexController.rutaFinal}" disabled="true" required="true" readonly="true"/>
+                           
+                            <p:commandButton value="Agregar" icon="ui-icon-check" update=":frmPrincipal:tabViw:tablaImagenes" onclick="PF('wdialogoImagenes').hide();" actionListener="#{indexController.azure()}" 
+                             rendered="#{indexController.accion == 'R'}"/>
+                         
+                        </h:panelGrid>
+                    </h:form>
+                </p:dialog>
+                <h:outputScript library="js" name="spanishLocales.js"/>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

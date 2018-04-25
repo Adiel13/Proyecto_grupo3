@@ -21,9 +21,9 @@ import java.util.logging.Logger;
  */
 public class Connection {
 
-    DB BaseDatos;
-    DBCollection coleccion;
-    BasicDBObject document = new BasicDBObject();
+    public static DB BaseDatos;
+    public static DBCollection coleccion;
+    public static BasicDBObject document = new BasicDBObject();
 
     public Connection() {
        try {
@@ -45,6 +45,13 @@ public class Connection {
     }
 
     public void mostrar() {
+        DBCursor cursor = coleccion.find();
+        while (cursor.hasNext()) {
+            System.out.println(cursor.next());
+        }
+    }
+    
+    public void listarRegistros() {
         DBCursor cursor = coleccion.find();
         while (cursor.hasNext()) {
             System.out.println(cursor.next());

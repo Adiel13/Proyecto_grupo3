@@ -20,12 +20,17 @@
                 </div>
                 <div id="top">
                     <h:form>
-                        <p:menubar >
-                            <p:menuitem value="Opcion 1"/>
-                            <p:menuitem value="Opcion 2"/>
-                            <p:menuitem value="Opcion 3"/>
-                        </p:menubar> 
-                    </h:form>
+                        <h:graphicImage width="200" height="45" library="images" name="matic_img.png" />
+                       <!-- <p:menubar >
+                            <p:menuitem value="Prueba rama"/>
+                            <p:menuitem value="Cargar Datos"/>
+                            <p:menuitem value="Graficas"/>
+                            <p:menuitem value="Imagenes"/>
+                        </p:menubar> -->
+                         <p:separator/>
+                         <p:commandButton icon="ui-icon-key" value="Provar conexion" action="#{indexController.ListarImagenes}"/>
+                         <p:commandButton icon="ui-icon-link" value="Provar azure" action="#{indexController.azure()}"/>
+                  </h:form>
                 </div>
             </div>
         </div>

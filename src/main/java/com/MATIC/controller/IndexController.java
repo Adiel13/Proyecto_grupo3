@@ -7,13 +7,25 @@ package com.MATIC.controller;
 
 
 import com.MATIC.controller.util.Connection;
+import static com.MATIC.controller.util.Connection.coleccion;
+import static com.MATIC.controller.util.Connection.document;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
+import java.io.File;
+import static java.io.File.separator;
+import java.io.FileOutputStream;
 import java.io.Serializable;
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Calendar;
+import javax.faces.context.FacesContext;
+import javax.servlet.ServletContext;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
@@ -26,6 +38,9 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.primefaces.context.RequestContext;
+import org.primefaces.event.FileUploadEvent;
+import org.primefaces.model.UploadedFile;
 
 
 /**
@@ -35,29 +50,164 @@ import org.json.JSONObject;
 @Named
 @ViewScoped
 public class IndexController implements Serializable {
+    
+    Connection conexion = new Connection();
+    private String accion;
+    private String nombre;
+    private String rutaFinal;
+    private UploadedFile uploadFile;
+    private String finalUploadFileName;
 
-  
+    public String getRutaFinal() {
+        return rutaFinal;
+    }
+
+    public void setRutaFinal(String rutaFinal) {
+        this.rutaFinal = rutaFinal;
+    }
+
+   
+    
+    
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+    
+    public UploadedFile getUploadFile() {
+        return uploadFile;
+    }
+
+    public void setUploadFile(UploadedFile uploadFile) {
+        this.uploadFile = uploadFile;
+    }
+
+    public String getAccion() {
+        return accion;
+    }
+
+    public void setAccion(String accion) {
+        this.accion = accion;
+    }
+    
     @PostConstruct
     public void init() {
-       // probarConexion();
+      
        
+    }
+ 
+    
+    public void ListarImagenes() {
+        
+        try (DBCursor cursor = coleccion.find()) {
+            while (cursor.hasNext()) {
+                DBObject cur = cursor.next();
+                System.out.println(cur);
+            }
+        }
+
+    }
+    
+    public boolean insertar(String accion) {
+        document.put("Nombre", nombre);
+        document.put("Ruta", rutaFinal);
+        document.put("Resultado", accion);
+        coleccion.insert(document);
+        return true;
     }
 
 
+    
+
     public void probarConexion() {
+        
+        
+        
         /*
         pruebas para insertar, modificar, eliminar y mostrar en consola
         
         */
-        Connection conexion = new Connection();
+       
         conexion.insertar("prueba insertar");
        // conexion.actualizar("prueba insertar", "prueba insertar111");
        // conexion.eliminar("prueba insertar");
         conexion.mostrar();
-        
-        
      }
     
+      public File getCurrentDir() {
+        ServletContext servletContext = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
+        //System.out.println(servletContext.getContextPath());        
+        File target = new File(servletContext.getRealPath("") +separator + "ArchivosScan");
+        if(!target.exists())
+            target.mkdir();
+        target = new File(servletContext.getRealPath("") +separator + "ArchivosScan" + separator +"imageComp");
+        if(!target.exists())
+            target.mkdir();
+        /*target = new File(servletContext.getRealPath("") +separator + "Archivos" + separator +cieProyecto.getTitulo() + separator + version);
+        if(!target.exists())
+            target.mkdir();*/
+        
+        return target;
+    }
+      
+    public void mostrarDialogoImagenes() {
+        this.setAccion("R");
+        RequestContext req = RequestContext.getCurrentInstance();
+        req.execute("PF('wdialogoImagenes').show()");
+    }
+
+     public void handleFileUpload(FileUploadEvent event) {
+        System.err.println("save");
+        uploadFile = event.getFile();
+        String ext = uploadFile.getFileName().substring(uploadFile.getFileName().lastIndexOf("."));
+       try{
+            finalUploadFileName =  uploadFile.getFileName().replace(" ","")+ "";// +Calendar.getInstance().getTimeInMillis() + ext;
+            
+            finalUploadFileName = finalUploadFileName.substring(0, finalUploadFileName.indexOf("."));
+            finalUploadFileName = finalUploadFileName + Calendar.getInstance().getTimeInMillis() + ext;
+            String nombreFile = finalUploadFileName;
+            
+            File target = getCurrentDir();
+            String ruta = target.getAbsolutePath().replace("\\", "/");
+            System.out.println("ruta"+ruta);
+            InputStream input = uploadFile.getInputstream();
+            File outFile = new File( ruta +"/"+  finalUploadFileName);
+            OutputStream output = new FileOutputStream(outFile);
+            
+            try {
+                int read = 0;
+                byte[] bytes = new byte[1024];
+              
+                while ((read = input.read(bytes)) != -1) {
+                    output.write(bytes, 0, read);
+                }
+              
+                input.close();
+                output.flush();
+                output.close();
+                
+                
+               
+                
+                ServletContext servletContext = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
+                String rutaArchivoFinal =  outFile.getAbsolutePath();
+                rutaArchivoFinal = rutaArchivoFinal.replace(servletContext.getContextPath(), "");
+                    
+                rutaFinal = rutaArchivoFinal;
+               
+             } catch (IOException e) {
+                e.printStackTrace();
+                throw e;
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+    
+
     public void azure(){
          // TODO code application logic here
          HttpClient httpClient = new DefaultHttpClient();
@@ -104,6 +254,7 @@ public class IndexController implements Serializable {
                         System.out.println(jsonString);
                         break;
                 }
+                insertar(jsonString);
             }
         } catch (IOException | URISyntaxException | ParseException | JSONException e) {
             System.out.println(e.getMessage());
