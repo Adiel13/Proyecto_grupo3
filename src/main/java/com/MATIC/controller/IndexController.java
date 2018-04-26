@@ -7,10 +7,14 @@ package com.MATIC.controller;
 
 
 import com.MATIC.controller.util.Connection;
+import static com.MATIC.controller.util.Connection.BaseDatos;
 import static com.MATIC.controller.util.Connection.coleccion;
 import static com.MATIC.controller.util.Connection.document;
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
+import com.mongodb.gridfs.GridFS;
+import com.mongodb.gridfs.GridFSDBFile;
+import com.mongodb.gridfs.GridFSInputFile;
 import java.io.File;
 import static java.io.File.separator;
 import java.io.FileOutputStream;
@@ -24,6 +28,7 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Calendar;
+import java.util.List;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 import org.apache.http.HttpEntity;
@@ -98,25 +103,53 @@ public class IndexController implements Serializable {
  
     
     public void ListarImagenes() {
-        
+      /*  
         try (DBCursor cursor = coleccion.find()) {
             while (cursor.hasNext()) {
                 DBObject cur = cursor.next();
                 System.out.println(cur);
             }
         }
-        
+        */
+      
+        GridFS gridFoto = new GridFS(BaseDatos, "foto");
+	DBCursor cursor = gridFoto.getFileList();
+	while (cursor.hasNext()) {
+		System.out.println(cursor.next());
+	}
      
     }
     
-    public boolean insertar(String inc) {
+    public boolean insertar(String inc) throws IOException {
         document.put("Nombre", nombre);
-        document.put("Ruta", rutaFinal);
+        
+        //document.put("Ruta", rutaFinal);
+        
+        // Guardar imagen en mongo usando GridFS
+        File archivo = new File(rutaFinal);
+	GridFS foto = new GridFS(BaseDatos, "foto");
+	GridFSInputFile archivoGuardar = foto.createFile(archivo);
+	archivoGuardar.setFilename(nombre);
+	archivoGuardar.save();
+                
         document.put("Resultado", inc);
         coleccion.insert(document);
         return true;
     }
 
+    public void mostrarImagen() throws IOException {
+        
+        String newFileName = "prueba";
+	
+        GridFS foto = new GridFS(BaseDatos, "foto");
+        BasicDBObject allImages = new BasicDBObject();
+	List<GridFSDBFile> listImageForOutput = foto.find(allImages);
+        
+        for(int i=0; i<listImageForOutput.size();i++) {
+            GridFSDBFile imageForOutput = listImageForOutput.get(i);
+            imageForOutput.writeTo("c:\\prueba"+i+".png"); //output to new file
+        }        
+    }
 
     
 
