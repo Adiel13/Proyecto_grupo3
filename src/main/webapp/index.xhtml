@@ -27,6 +27,7 @@ and open the template in the editor.
                               
                                 <p:commandButton icon="ui-icon-plusthick" value="Nuevo" actionListener="#{indexController.mostrarDialogoImagenes()}" style="margin:10px" update=":frmDialogoImagenes"/>
                                 <p:dataTable id="tablaImagenes" emptyMessage="No existe ninguna Imagen indexada"  var="pro">
+                              
                                     <p:column headerText="Nombre" >
                                         <h:outputText value="" />
                                     </p:column>
@@ -60,14 +61,15 @@ and open the template in the editor.
                                       fileUploadListener="#{indexController.handleFileUpload}" update="rutaarchivo"></p:fileUpload>
                         <h:panelGrid columns="2" id="pgD1" style="margin-bottom:10px" cellpadding="2"> 
                             <p:outputLabel for="nombreArchivo" value="Título de la Imagen"/>
-                            <p:inputText id="nombreArchivo" value="#{indexController.nombre}" readonly="false" required="true"/>
+                            <p:inputText id="nombreArchivo" value="#{indexController.nombre}" readonly="false" required="false"/>
                             
                              <p:outputLabel for="rutaarchivo" value="Ruta del Archivo"/>
-                             <p:inputText id="rutaarchivo" value="#{indexController.rutaFinal}" disabled="true" required="true" readonly="true"/>
+                             <p:inputText id="rutaarchivo" value="#{indexController.rutaFinal}" disabled="true" required="false" readonly="true"/>
                            
                             <p:commandButton value="Agregar" icon="ui-icon-check" update=":frmPrincipal:tabViw:tablaImagenes" onclick="PF('wdialogoImagenes').hide();" actionListener="#{indexController.azure()}" 
                              rendered="#{indexController.accion == 'R'}"/>
-                            
+                             <p:commandButton value="Actualizar" icon="ui-icon-check" update=":frmPrincipal:tabViw:tablaImagenes" onclick="PF('wdialogoImagenes').hide();" actionListener="#{indexController.azure()}" 
+                                             rendered="#{solicitudComprasController.accion == 'M'}"/>
                               <p:commandButton value="Cancelar" icon="ui-icon-close" immediate="true" onclick="PF('wdialogoImagenes').hide();" />	
                          
                         </h:panelGrid>

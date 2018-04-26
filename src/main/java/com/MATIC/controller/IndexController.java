@@ -53,11 +53,11 @@ public class IndexController implements Serializable {
     
     Connection conexion = new Connection();
     private String accion;
-    private String nombre;
-    private String rutaFinal;
+    private String nombre="";
+    private String rutaFinal="";
     private UploadedFile uploadFile;
     private String finalUploadFileName;
-
+  
     public String getRutaFinal() {
         return rutaFinal;
     }
@@ -66,9 +66,6 @@ public class IndexController implements Serializable {
         this.rutaFinal = rutaFinal;
     }
 
-   
-    
-    
     public String getNombre() {
         return nombre;
     }
@@ -108,13 +105,14 @@ public class IndexController implements Serializable {
                 System.out.println(cur);
             }
         }
-
+        
+     
     }
     
-    public boolean insertar(String accion) {
+    public boolean insertar(String inc) {
         document.put("Nombre", nombre);
         document.put("Ruta", rutaFinal);
-        document.put("Resultado", accion);
+        document.put("Resultado", inc);
         coleccion.insert(document);
         return true;
     }
@@ -123,10 +121,7 @@ public class IndexController implements Serializable {
     
 
     public void probarConexion() {
-        
-        
-        
-        /*
+          /*
         pruebas para insertar, modificar, eliminar y mostrar en consola
         
         */
@@ -140,17 +135,13 @@ public class IndexController implements Serializable {
       public File getCurrentDir() {
         ServletContext servletContext = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
         //System.out.println(servletContext.getContextPath());        
-        File target = new File(servletContext.getRealPath("") +separator + "ArchivosScan");
+        File target = new File(servletContext.getRealPath("") +separator + "Fotografias");
         if(!target.exists())
             target.mkdir();
-        target = new File(servletContext.getRealPath("") +separator + "ArchivosScan" + separator +"imageComp");
+        target = new File(servletContext.getRealPath("") +separator + "Fotografias" + separator +"imageComp");
         if(!target.exists())
             target.mkdir();
-        /*target = new File(servletContext.getRealPath("") +separator + "Archivos" + separator +cieProyecto.getTitulo() + separator + version);
-        if(!target.exists())
-            target.mkdir();*/
-        
-        return target;
+       return target;
     }
       
     public void mostrarDialogoImagenes() {
@@ -255,6 +246,8 @@ public class IndexController implements Serializable {
                         break;
                 }
                 insertar(jsonString);
+                nombre="";
+                rutaFinal="";
             }
         } catch (IOException | URISyntaxException | ParseException | JSONException e) {
             System.out.println(e.getMessage());
