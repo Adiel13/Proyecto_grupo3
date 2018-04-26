@@ -12,6 +12,7 @@ import static com.MATIC.controller.util.Connection.coleccion;
 import static com.MATIC.controller.util.Connection.document;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 import com.mongodb.gridfs.GridFS;
 import com.mongodb.gridfs.GridFSDBFile;
 import com.mongodb.gridfs.GridFSInputFile;
@@ -28,6 +29,7 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.List;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
@@ -62,7 +64,17 @@ public class IndexController implements Serializable {
     private String rutaFinal="";
     private UploadedFile uploadFile;
     private String finalUploadFileName;
-  
+    List<DBObject> ListImg;
+
+    public List<DBObject> getListImg() {
+        return ListImg;
+    }
+
+    public void setListImg(List<DBObject> ListImg) {
+        this.ListImg = ListImg;
+    }
+    
+    
     public String getRutaFinal() {
         return rutaFinal;
     }
@@ -97,9 +109,26 @@ public class IndexController implements Serializable {
     
     @PostConstruct
     public void init() {
+       
+       cargarLista();
       
        
     }
+    
+    public void cargarLista() {
+
+        DBCursor lisCursor = coleccion.find();
+        ListImg = lisCursor.toArray();
+
+        Iterator iter = ListImg.iterator();
+        int cont = 0;
+        while (iter.hasNext()) {
+            System.out.println(cont + ": " + iter.next().toString());
+            cont++;
+        }
+
+    }
+
  
     
     public void ListarImagenes() {
@@ -110,8 +139,9 @@ public class IndexController implements Serializable {
                 System.out.println(cur);
             }
         }
-        */
-      
+        
+    */
+       
         GridFS gridFoto = new GridFS(BaseDatos, "foto");
 	DBCursor cursor = gridFoto.getFileList();
 	while (cursor.hasNext()) {
@@ -181,6 +211,11 @@ public class IndexController implements Serializable {
         this.setAccion("R");
         RequestContext req = RequestContext.getCurrentInstance();
         req.execute("PF('wdialogoImagenes').show()");
+    }
+    public void mostrarDialogoAnalisis() {
+        this.setAccion("R");
+        RequestContext req = RequestContext.getCurrentInstance();
+        req.execute("PF('wdialogoAnalisis').show()");
     }
 
      public void handleFileUpload(FileUploadEvent event) {
@@ -279,6 +314,7 @@ public class IndexController implements Serializable {
                         break;
                 }
                 insertar(jsonString);
+                cargarLista();
                 nombre="";
                 rutaFinal="";
             }
