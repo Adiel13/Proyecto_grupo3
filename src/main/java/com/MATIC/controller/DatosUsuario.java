@@ -13,14 +13,14 @@ import org.json.JSONObject;
  * @author lizama
  */
 public class DatosUsuario {
-    private String nombre;
-    private InputStream imagen;
-    private JSONObject datos;
+    private final String nombre;
+    private final InputStream imagen;
+    private final Emociones emociones;
     
-    public DatosUsuario(String nombre, InputStream imagen, JSONObject datos){
+    public DatosUsuario(String nombre, InputStream imagen, Emociones emociones){
         this.nombre = nombre;
         this.imagen = imagen;
-        this.datos = datos;
+        this.emociones = emociones;
     }
     
     public String getNombre(){
@@ -31,8 +31,8 @@ public class DatosUsuario {
         return imagen;
     }
     
-    public JSONObject getDatos(){
-        return datos;
+    public Emociones getDatos(){
+        return emociones;
     }
     
 }

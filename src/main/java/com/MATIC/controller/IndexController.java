@@ -134,15 +134,35 @@ public class IndexController implements Serializable {
             GridFS gfsPhoto;
             while (cursor.hasNext()) {
                 DBObject cur = cursor.next();                
-                json = new JSONObject(JSON.serialize(cur));                
+                json = new JSONObject(JSON.serialize(cur));
+                String stringArray = json.get("Resultado").toString();
+                JSONArray jsonArray = new JSONArray(stringArray);
                 nombre = cur.get("Nombre").toString();                
                 gfsPhoto = new GridFS(BaseDatos, "foto");
-                InputStream inputStream = gfsPhoto.findOne(nombre).getInputStream();
-                DatosUsuario usuario = new DatosUsuario(nombre, inputStream, json);
+                InputStream inputStream = gfsPhoto.findOne(nombre).getInputStream();                               
+                
+                DatosUsuario usuario = new DatosUsuario(nombre, inputStream, setEmociones(jsonArray));
                 listUsuarios.add(usuario);
             }            
         }  
     }
+    
+    public Emociones setEmociones(JSONArray array){
+        
+        JSONObject faceAttributes = (JSONObject) array.getJSONObject(0).get("faceAttributes");        
+        JSONObject emotions = (JSONObject) faceAttributes.get("emotion");    
+        System.out.println("Emociones: "+ emotions);
+        
+        return new Emociones(emotions.get("anger").toString(),
+                emotions.get("contempt").toString(),
+                emotions.get("disgust").toString(),
+                emotions.get("fear").toString(),
+                emotions.get("happiness").toString(),
+                emotions.get("neutral").toString(),
+                emotions.get("sadness").toString(),
+                emotions.get("surprise").toString());
+    }
+   
     
     public void ListarImagenes() {
         
