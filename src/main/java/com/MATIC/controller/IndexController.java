@@ -16,6 +16,7 @@ import com.mongodb.DBObject;
 import com.mongodb.gridfs.GridFS;
 import com.mongodb.gridfs.GridFSDBFile;
 import com.mongodb.gridfs.GridFSInputFile;
+import com.mongodb.util.JSON;
 import java.io.File;
 import static java.io.File.separator;
 import java.io.FileOutputStream;
@@ -28,6 +29,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
@@ -65,6 +67,7 @@ public class IndexController implements Serializable {
     private UploadedFile uploadFile;
     private String finalUploadFileName;
     List<DBObject> ListImg;
+    List<DatosUsuario> listUsuarios;
 
     public List<DBObject> getListImg() {
         return ListImg;
@@ -74,6 +77,13 @@ public class IndexController implements Serializable {
         this.ListImg = ListImg;
     }
     
+    public List<DatosUsuario> getListUsuarios(){
+        return listUsuarios;
+    }
+    
+    public void setListUsuarios(List<DatosUsuario> listUsuarios){
+        this.listUsuarios = listUsuarios;
+    }
     
     public String getRutaFinal() {
         return rutaFinal;
@@ -116,32 +126,33 @@ public class IndexController implements Serializable {
     }
     
     public void cargarLista() {
-
-        DBCursor lisCursor = coleccion.find();
-        ListImg = lisCursor.toArray();
-
-        Iterator iter = ListImg.iterator();
-        int cont = 0;
-        while (iter.hasNext()) {
-            System.out.println(cont + ": " + iter.next().toString());
-            cont++;
-        }
-
+        
+        listUsuarios = new ArrayList<>();
+        
+        try (DBCursor cursor = coleccion.find()) {             
+            JSONObject json;
+            GridFS gfsPhoto;
+            while (cursor.hasNext()) {
+                DBObject cur = cursor.next();                
+                json = new JSONObject(JSON.serialize(cur));                
+                nombre = cur.get("Nombre").toString();                
+                gfsPhoto = new GridFS(BaseDatos, "foto");
+                InputStream inputStream = gfsPhoto.findOne(nombre).getInputStream();
+                DatosUsuario usuario = new DatosUsuario(nombre, inputStream, json);
+                listUsuarios.add(usuario);
+            }            
+        }  
     }
-
- 
     
     public void ListarImagenes() {
-      /*  
+        
         try (DBCursor cursor = coleccion.find()) {
             while (cursor.hasNext()) {
                 DBObject cur = cursor.next();
                 System.out.println(cur);
             }
-        }
-        
-    */
-       
+        }      
+           
         GridFS gridFoto = new GridFS(BaseDatos, "foto");
 	DBCursor cursor = gridFoto.getFileList();
 	while (cursor.hasNext()) {
