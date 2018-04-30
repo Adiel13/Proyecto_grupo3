@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.MATIC.controller;
+package com.MATIC.model;
 
 import java.io.InputStream;
 
@@ -33,5 +33,6 @@ public class DatosUsuario {
     public Emociones getDatos(){
         return emociones;
     }
+    
     
 }
