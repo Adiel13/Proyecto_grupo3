@@ -33,7 +33,7 @@ and open the template in the editor.
                                         <h:outputText value="#{pro.nombre}" /> 
                                     </p:column>
                                     <p:column headerText="Analizar" >
-                                        <p:commandLink   actionListener="#{indexController.mostrarDialogoAnalisis()}" style="margin:10px" update=":frmDialogoAnalisis">                                        
+                                        <p:commandLink   actionListener="#{indexController.mostrarDialogoAnalisis(pro.nombre)}" style="margin:10px" update=":frmDialogoAnalisis">                                        
                                             <o:graphicImage style="height:60px;width:60px;" value="#{pro.imagen}" dataURI="true" />
                                         </p:commandLink> 
                                     </p:column>
@@ -78,21 +78,34 @@ and open the template in the editor.
                 </p:dialog>
                 <p:dialog id="dialogoAnalisis" widgetVar="wdialogoAnalisis" header="Analisis (Imagen indexada)" modal="true" resizable="false" closeOnEscape="true" draggable="false">
                     <h:form id="frmDialogoAnalisis" enctype="multipart/form-data">
+                        
                         <h:panelGrid columns="2" id="pgD1" style="margin-bottom:10px" cellpadding="2"> 
                             <f:facet name="header">
-                                <p:graphicImage library="images" name="foto.jpg" style="height: 385px; width: 500px"/> 
+                                <p:graphicImage library="images" name="user.png" style="height: 385px; width: 500px"/> 
                             </f:facet>
-                             <h:outputText value="Felicidad:" />
+                             <h:outputText value="Enfado" />
                             <h:outputText value="10%" />
 
-                            <h:outputText value="Enojo:" />
-                            <h:outputText value="15%" />
+                            <h:outputText value="Desprecio:" />
+                            <h:outputText value="30%" />
 
-                            <h:outputText value="Sueño:" />
-                            <h:outputText value="50%"/>
+                            <h:outputText value="Disgusto:" />
+                            <h:outputText value="10%"/>
 
-                            <h:outputText value="Ira:" />
-                            <h:outputText value="25%" />
+                            <h:outputText value="Miedo:" />
+                            <h:outputText value="10%" />
+                                                        
+                            <h:outputText value="Felicidad" />
+                            <h:outputText value="10%" />
+                                                        
+                            <h:outputText value="Neutral" />
+                            <h:outputText value="10%" />
+                                                        
+                            <h:outputText value="Tristeza" />
+                            <h:outputText value="10%" />
+                            
+                            <h:outputText value="Sorpresa" />
+                            <h:outputText value="10%" />
 
                             <p:commandButton value="Cancelar" icon="ui-icon-close" immediate="true" onclick="PF('wdialogoAnalisis').hide();" />	
                         </h:panelGrid>

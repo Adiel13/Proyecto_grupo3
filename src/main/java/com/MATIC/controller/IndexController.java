@@ -68,7 +68,16 @@ public class IndexController implements Serializable {
     private String finalUploadFileName;
     List<DBObject> ListImg;
     List<DatosUsuario> listUsuarios;
+    DatosUsuario dialogoAnalisis;
 
+    public DatosUsuario getDialogoAnalisis(){
+        return dialogoAnalisis;
+    }
+    
+    public void setDialogoAnalasis(DatosUsuario dialogoAnalisis){
+        this.dialogoAnalisis = dialogoAnalisis;
+    }
+    
     public List<DBObject> getListImg() {
         return ListImg;
     }
@@ -145,6 +154,18 @@ public class IndexController implements Serializable {
                 listUsuarios.add(usuario);
             }            
         }  
+    }
+    
+    public void mostrarUsuario(String nombre){
+        BasicDBObject query = new BasicDBObject();
+	query.put("Nombre", nombre);
+        DBObject datosDB = coleccion.findOne(query);
+        JSONObject json = new JSONObject(JSON.serialize(datosDB));
+        String stringArray = json.get("Resultado").toString();
+        JSONArray jsonArray = new JSONArray(stringArray);              
+        GridFS gfsPhoto = new GridFS(BaseDatos, "foto");
+        InputStream inputStream = gfsPhoto.findOne(nombre).getInputStream();                               
+        dialogoAnalisis = new DatosUsuario(nombre, inputStream, setEmociones(jsonArray));        
     }
     
     public Emociones setEmociones(JSONArray array){
@@ -243,7 +264,8 @@ public class IndexController implements Serializable {
         RequestContext req = RequestContext.getCurrentInstance();
         req.execute("PF('wdialogoImagenes').show()");
     }
-    public void mostrarDialogoAnalisis() {
+    public void mostrarDialogoAnalisis(String nombre) {
+        mostrarUsuario(nombre);
         this.setAccion("R");
         RequestContext req = RequestContext.getCurrentInstance();
         req.execute("PF('wdialogoAnalisis').show()");
