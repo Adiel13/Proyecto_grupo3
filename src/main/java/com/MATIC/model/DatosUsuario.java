@@ -12,15 +12,29 @@ import java.io.InputStream;
  * @author lizama
  */
 public class DatosUsuario {
-    private final String nombre;
-    private final InputStream imagen;
-    private final Emociones emociones;
+    private  String nombre;
+    private  InputStream imagen;
+    private  Emociones emociones;
     
     public DatosUsuario(String nombre, InputStream imagen, Emociones emociones){
         this.nombre = nombre;
         this.imagen = imagen;
         this.emociones = emociones;
     }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public void setImagen(InputStream imagen) {
+        this.imagen = imagen;
+    }
+
+    public void setEmociones(Emociones emociones) {
+        this.emociones = emociones;
+    }
+    
+    
     
     public String getNombre(){
         return nombre;

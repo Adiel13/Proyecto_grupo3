@@ -10,14 +10,14 @@ package com.MATIC.model;
  * @author lizama
  */
 public class Emociones {
-    private final String enfado; // anger
-    private final String desprecio; //contempt
-    private final String disgusto; // disgust
-    private final String miedo; //fear
-    private final String felicidad; //happiness
-    private final String neutral;
-    private final String tristeza; //sadness
-    private final String sorpresa; //surprise
+    private  String enfado; // anger
+    private  String desprecio; //contempt
+    private  String disgusto; // disgust
+    private  String miedo; //fear
+    private  String felicidad; //happiness
+    private  String neutral;
+    private  String tristeza; //sadness
+    private  String sorpresa; //surprise
     
     public Emociones(String enfado, String desprecio,
             String disgusto, String miedo, String felicidad,
@@ -55,6 +55,39 @@ public class Emociones {
     public String getNeutral(){
         return neutral;
     }
+
+    public void setEnfado(String enfado) {
+        this.enfado = enfado;
+    }
+
+    public void setDesprecio(String desprecio) {
+        this.desprecio = desprecio;
+    }
+
+    public void setDisgusto(String disgusto) {
+        this.disgusto = disgusto;
+    }
+
+    public void setMiedo(String miedo) {
+        this.miedo = miedo;
+    }
+
+    public void setFelicidad(String felicidad) {
+        this.felicidad = felicidad;
+    }
+
+    public void setNeutral(String neutral) {
+        this.neutral = neutral;
+    }
+
+    public void setTristeza(String tristeza) {
+        this.tristeza = tristeza;
+    }
+
+    public void setSorpresa(String sorpresa) {
+        this.sorpresa = sorpresa;
+    }
+    
     
     public String getTristeza(){
         return tristeza;

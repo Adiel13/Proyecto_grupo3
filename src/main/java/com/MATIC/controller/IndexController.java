@@ -28,7 +28,6 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -63,14 +62,18 @@ public class IndexController implements Serializable {
     
     Connection conexion = new Connection();
     private String accion;
-    private String nombre="";
+    private String nombre;
     private String rutaFinal="";
     private UploadedFile uploadFile;
     private String finalUploadFileName;
-    List<DBObject> ListImg;
     List<DatosUsuario> listUsuarios;
-    DatosUsuario dialogoAnalisis;
+    
+    DatosUsuario dialogoAnalisis = null;
+    private  InputStream inputStream;
+    private FileOutputStream output;
+    private InputStream inputImage;
 
+      
     public DatosUsuario getDialogoAnalisis(){
         return dialogoAnalisis;
     }
@@ -79,13 +82,7 @@ public class IndexController implements Serializable {
         this.dialogoAnalisis = dialogoAnalisis;
     }
     
-    public List<DBObject> getListImg() {
-        return ListImg;
-    }
-
-    public void setListImg(List<DBObject> ListImg) {
-        this.ListImg = ListImg;
-    }
+ 
     
     public List<DatosUsuario> getListUsuarios(){
         return listUsuarios;
@@ -93,6 +90,9 @@ public class IndexController implements Serializable {
     
     public void setListUsuarios(List<DatosUsuario> listUsuarios){
         this.listUsuarios = listUsuarios;
+    }
+    public InputStream getInputStream() {
+        return inputStream;
     }
     
     public String getRutaFinal() {
@@ -110,7 +110,7 @@ public class IndexController implements Serializable {
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
-    
+
     public UploadedFile getUploadFile() {
         return uploadFile;
     }
@@ -129,16 +129,12 @@ public class IndexController implements Serializable {
     
     @PostConstruct
     public void init() {
-       
-       cargarLista();
-      
-       
+        dialogoAnalisis = null;
+        cargarLista();
     }
     
     public void cargarLista() {
-        
         listUsuarios = new ArrayList<>();
-        
         try (DBCursor cursor = coleccion.find()) {             
             JSONObject json;
             GridFS gfsPhoto;
@@ -147,26 +143,30 @@ public class IndexController implements Serializable {
                 json = new JSONObject(JSON.serialize(cur));
                 String stringArray = json.get("Resultado").toString();
                 JSONArray jsonArray = new JSONArray(stringArray);
-                nombre = cur.get("Nombre").toString();                
+                String nombreBusqueda = cur.get("Nombre").toString();                
                 gfsPhoto = new GridFS(BaseDatos, "foto");
-                InputStream inputStream = gfsPhoto.findOne(nombre).getInputStream();                               
-                
-                DatosUsuario usuario = new DatosUsuario(nombre, inputStream, setEmociones(jsonArray));
+                inputStream = gfsPhoto.findOne(nombreBusqueda).getInputStream();                               
+                DatosUsuario usuario = new DatosUsuario(nombreBusqueda, inputStream, setEmociones(jsonArray));
                 listUsuarios.add(usuario);
+                if(dialogoAnalisis == null)
+                    dialogoAnalisis = usuario;
             }            
         }  
     }
     
-    public void mostrarUsuario(String nombre){
+    public void mostrarUsuario(DatosUsuario usuarioParametro){
         BasicDBObject query = new BasicDBObject();
-	query.put("Nombre", nombre);
+	query.put("Nombre", usuarioParametro.getNombre());
+        
         DBObject datosDB = coleccion.findOne(query);
         JSONObject json = new JSONObject(JSON.serialize(datosDB));
         String stringArray = json.get("Resultado").toString();
         JSONArray jsonArray = new JSONArray(stringArray);              
         GridFS gfsPhoto = new GridFS(BaseDatos, "foto");
-        InputStream inputStream = gfsPhoto.findOne(nombre).getInputStream();                               
-        dialogoAnalisis = new DatosUsuario(nombre, inputStream, setEmociones(jsonArray));        
+        inputStream = gfsPhoto.findOne(usuarioParametro.getNombre()).getInputStream();                       
+        dialogoAnalisis = new DatosUsuario(usuarioParametro.getNombre(), inputStream, setEmociones(jsonArray));  
+       
+        
     }
     
     public Emociones setEmociones(JSONArray array){
@@ -183,44 +183,25 @@ public class IndexController implements Serializable {
                 emotions.get("neutral").toString(),
                 emotions.get("sadness").toString(),
                 emotions.get("surprise").toString());
-    }
-   
-    
-    public void ListarImagenes() {
         
-        try (DBCursor cursor = coleccion.find()) {
-            while (cursor.hasNext()) {
-                DBObject cur = cursor.next();
-                System.out.println(cur);
-            }
-        }      
-           
-        GridFS gridFoto = new GridFS(BaseDatos, "foto");
-	DBCursor cursor = gridFoto.getFileList();
-	while (cursor.hasNext()) {
-		System.out.println(cursor.next());
-	}
-     
     }
+  
     
     public boolean insertar(String inc) throws IOException {
+        document = new BasicDBObject();
         document.put("Nombre", nombre);
-        
-        //document.put("Ruta", rutaFinal);
-        
+        document.put("Resultado", inc);
+        coleccion.insert(document);
         // Guardar imagen en mongo usando GridFS
         File archivo = new File(rutaFinal);
 	GridFS foto = new GridFS(BaseDatos, "foto");
 	GridFSInputFile archivoGuardar = foto.createFile(archivo);
 	archivoGuardar.setFilename(nombre);
 	archivoGuardar.save();
-                
-        document.put("Resultado", inc);
-        coleccion.insert(document);
         return true;
     }
 
-    public void mostrarImagen() throws IOException {
+   /* public void mostrarImagen() throws IOException {
         
         String newFileName = "prueba";
 	
@@ -232,21 +213,21 @@ public class IndexController implements Serializable {
             GridFSDBFile imageForOutput = listImageForOutput.get(i);
             imageForOutput.writeTo("c:\\prueba"+i+".png"); //output to new file
         }        
-    }
+    }*/
 
     
 
-    public void probarConexion() {
+    /*public void probarConexion() {
           /*
         pruebas para insertar, modificar, eliminar y mostrar en consola
         
-        */
+        
        
         conexion.insertar("prueba insertar");
        // conexion.actualizar("prueba insertar", "prueba insertar111");
        // conexion.eliminar("prueba insertar");
         conexion.mostrar();
-     }
+     }*/
     
       public File getCurrentDir() {
         ServletContext servletContext = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
@@ -261,12 +242,15 @@ public class IndexController implements Serializable {
     }
       
     public void mostrarDialogoImagenes() {
+        nombre = "";
+        rutaFinal="";
         this.setAccion("R");
         RequestContext req = RequestContext.getCurrentInstance();
         req.execute("PF('wdialogoImagenes').show()");
     }
-    public void mostrarDialogoAnalisis(String nombre) {
-        mostrarUsuario(nombre);
+    public void mostrarDialogoAnalisis(DatosUsuario usuarioParametro) {
+        System.out.println("usuarioParametro " + usuarioParametro.getNombre());
+        mostrarUsuario(usuarioParametro);
         this.setAccion("R");
         RequestContext req = RequestContext.getCurrentInstance();
         req.execute("PF('wdialogoAnalisis').show()");
@@ -286,24 +270,19 @@ public class IndexController implements Serializable {
             File target = getCurrentDir();
             String ruta = target.getAbsolutePath().replace("\\", "/");
             System.out.println("ruta"+ruta);
-            InputStream input = uploadFile.getInputstream();
+            inputImage = uploadFile.getInputstream();
             File outFile = new File( ruta +"/"+  finalUploadFileName);
-            OutputStream output = new FileOutputStream(outFile);
+            output = new FileOutputStream(outFile);
             
             try {
                 int read = 0;
-                byte[] bytes = new byte[1024];
-              
-                while ((read = input.read(bytes)) != -1) {
+                byte[] bytes = new byte[1024];              
+                while ((read = inputImage.read(bytes)) != -1) {
                     output.write(bytes, 0, read);
                 }
-              
-                input.close();
+                inputImage.close();
                 output.flush();
                 output.close();
-                
-                
-               
                 
                 ServletContext servletContext = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
                 String rutaArchivoFinal =  outFile.getAbsolutePath();
@@ -342,8 +321,29 @@ public class IndexController implements Serializable {
             request.setHeader("Ocp-Apim-Subscription-Key", "e5035ca930d84748852bd8c89f801e6b");
 
             // Request body. Replace the example URL below with the URL of the image you want to analyze.
-           // StringEntity reqEntity = new StringEntity("{ \"url\": \"https://scontent-mia3-2.xx.fbcdn.net/v/t1.0-9/18118688_1446362395425071_7485885403947294730_n.jpg?_nc_cat=0&_nc_eui2=v1%3AAeHuX1J3FBKQSvnILlw9xLUYsOnboWgZDe3Xw0pnXMDZ1uDuBAj8ExT3lbHlcBG794UxyVqkyk0k12kJXmd4HdLFmS_0IPoRPCU31HDkmpuaPQ&oh=33ae072b31d876dd4080a1c1e8625c4f&oe=5B51A7E7\" }");
-            StringEntity reqEntity = new StringEntity("{ \"url\": \"http://1.bp.blogspot.com/-bbUDijSShSk/UvPOcFZpDTI/AAAAAAABgT8/USPimXZapcE/s1600/rostros-africanos-al-oleo+(2).jpg\" }");
+            /*
+            no borrar, son pruebas para leer la imagen
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
+            int nRead;
+            int byteReads;
+            ByteArrayOutputStream outputData = new ByteArrayOutputStream(1024);
+            while ((byteReads = inputImage.read()) != -1) {
+                output.write(byteReads);
+            }
+
+            byte[] data = outputData.toByteArray();
+
+            
+            StringBuilder sb = new StringBuilder();
+            for (byte by : data)
+                sb.append(Integer.toBinaryString(by & 0xFF));
+            System.out.println("Imagen " + sb.toString());*/
+            //ByteArrayEntity  reqEntity = new ByteArrayEntity (buffer.toByteArray());
+            StringEntity reqEntity = new StringEntity("{ \"url\": \"https://scontent-mia3-2.xx.fbcdn.net/v/t1.0-9/18118688_1446362395425071_7485885403947294730_n.jpg?_nc_cat=0&_nc_eui2=v1%3AAeHuX1J3FBKQSvnILlw9xLUYsOnboWgZDe3Xw0pnXMDZ1uDuBAj8ExT3lbHlcBG794UxyVqkyk0k12kJXmd4HdLFmS_0IPoRPCU31HDkmpuaPQ&oh=33ae072b31d876dd4080a1c1e8625c4f&oe=5B51A7E7\" }");
+            //StringEntity reqEntity = new StringEntity("{ \"url\": \"http://1.bp.blogspot.com/-bbUDijSShSk/UvPOcFZpDTI/AAAAAAABgT8/USPimXZapcE/s1600/rostros-africanos-al-oleo+(2).jpg\" }");
+            //StringEntity reqEntity = new StringEntity("{ \"url\": \"http://208.109.movil.png\" }");
+            //StringEntity reqEntity = new StringEntity(sb.toString());
             request.setEntity(reqEntity);
 
             HttpResponse response = httpClient.execute(request);
@@ -357,20 +357,20 @@ public class IndexController implements Serializable {
                 switch (jsonString.charAt(0)) {
                     case '[':
                         JSONArray jsonArray = new JSONArray(jsonString);
-                        System.out.println(jsonArray.toString(2));
+                        //System.out.println("Option 0" + jsonArray.toString(2));
                         break;
                     case '{':
                         JSONObject jsonObject = new JSONObject(jsonString);
-                        System.out.println(jsonObject.toString(2));
+                        //System.out.println("Option 1" + jsonObject.toString(2));
                         break;
                     default:
-                        System.out.println(jsonString);
+                        //System.out.println("Option 3" + jsonString);
                         break;
                 }
+                System.out.println("-"+jsonString);
                 insertar(jsonString);
                 cargarLista();
-                nombre="";
-                rutaFinal="";
+              
             }
         } catch (IOException | URISyntaxException | ParseException | JSONException e) {
             System.out.println(e.getMessage());
@@ -379,6 +379,8 @@ public class IndexController implements Serializable {
     
     }
 
- 
+    
+
+    
    
 }
