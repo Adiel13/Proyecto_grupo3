@@ -16,7 +16,6 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.gridfs.GridFS;
-import com.mongodb.gridfs.GridFSDBFile;
 import com.mongodb.gridfs.GridFSInputFile;
 import com.mongodb.util.JSON;
 import java.io.File;
@@ -145,7 +144,7 @@ public class IndexController implements Serializable {
                 JSONArray jsonArray = new JSONArray(stringArray);
                 String nombreBusqueda = cur.get("Nombre").toString();                
                 gfsPhoto = new GridFS(BaseDatos, "foto");
-                inputStream = gfsPhoto.findOne(nombreBusqueda).getInputStream();                               
+                inputStream = gfsPhoto.findOne(nombreBusqueda).getInputStream();
                 DatosUsuario usuario = new DatosUsuario(nombreBusqueda, inputStream, setEmociones(jsonArray));
                 listUsuarios.add(usuario);
                 if(dialogoAnalisis == null)
@@ -175,15 +174,23 @@ public class IndexController implements Serializable {
         JSONObject emotions = (JSONObject) faceAttributes.get("emotion");    
         System.out.println("Emociones: "+ emotions);
         
-        return new Emociones(emotions.get("anger").toString(),
-                emotions.get("contempt").toString(),
-                emotions.get("disgust").toString(),
-                emotions.get("fear").toString(),
-                emotions.get("happiness").toString(),
-                emotions.get("neutral").toString(),
-                emotions.get("sadness").toString(),
-                emotions.get("surprise").toString());
+        return new Emociones(getPorcentage(emotions.get("anger").toString()),
+                getPorcentage(emotions.get("contempt").toString()),
+                getPorcentage(emotions.get("disgust").toString()),
+                getPorcentage(emotions.get("fear").toString()),
+                getPorcentage(emotions.get("happiness").toString()),
+                getPorcentage(emotions.get("neutral").toString()),
+                getPorcentage(emotions.get("sadness").toString()),
+                getPorcentage(emotions.get("surprise").toString()));
         
+    }
+    
+    public String getPorcentage(String texto){
+        
+        float numero = Float.parseFloat(texto);
+        float porcentaje = numero * 100;
+        String textoPorcentaje = Float.toString(porcentaje);        
+        return textoPorcentaje;
     }
   
     
