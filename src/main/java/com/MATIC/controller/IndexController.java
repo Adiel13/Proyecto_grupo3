@@ -40,6 +40,7 @@ import org.apache.http.ParseException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
@@ -145,6 +146,12 @@ public class IndexController implements Serializable {
                 String nombreBusqueda = cur.get("Nombre").toString();                
                 gfsPhoto = new GridFS(BaseDatos, "foto");
                 inputStream = gfsPhoto.findOne(nombreBusqueda).getInputStream();
+                
+                if(inputStream == null)
+                {
+                    inputStream = this.getClass().getResourceAsStream("/images/user.png");
+                }
+                               
                 DatosUsuario usuario = new DatosUsuario(nombreBusqueda, inputStream, setEmociones(jsonArray));
                 listUsuarios.add(usuario);
                 if(dialogoAnalisis == null)
@@ -200,6 +207,8 @@ public class IndexController implements Serializable {
         document.put("Resultado", inc);
         coleccion.insert(document);
         // Guardar imagen en mongo usando GridFS
+        System.out.println("rutaFinal "+ rutaFinal);
+        //File archivo = new File(rutaFinal.replace("Fotografias", "MATIC/Fotografias"));
         File archivo = new File(rutaFinal);
 	GridFS foto = new GridFS(BaseDatos, "foto");
 	GridFSInputFile archivoGuardar = foto.createFile(archivo);
@@ -272,14 +281,13 @@ public class IndexController implements Serializable {
             
             finalUploadFileName = finalUploadFileName.substring(0, finalUploadFileName.indexOf("."));
             finalUploadFileName = finalUploadFileName + Calendar.getInstance().getTimeInMillis() + ext;
-            String nombreFile = finalUploadFileName;
             
             File target = getCurrentDir();
             String ruta = target.getAbsolutePath().replace("\\", "/");
             System.out.println("ruta"+ruta);
             inputImage = uploadFile.getInputstream();
             File outFile = new File( ruta +"/"+  finalUploadFileName);
-            output = new FileOutputStream(outFile);
+                output = new FileOutputStream(outFile);
             
             try {
                 int read = 0;
@@ -324,7 +332,7 @@ public class IndexController implements Serializable {
             HttpPost request = new HttpPost(uri);
 
             // Request headers. Replace the example key below with your valid subscription key.
-            request.setHeader("Content-Type", "application/json");
+            request.setHeader("Content-Type", "application/octet-stream");
             request.setHeader("Ocp-Apim-Subscription-Key", "e5035ca930d84748852bd8c89f801e6b");
 
             // Request body. Replace the example URL below with the URL of the image you want to analyze.
@@ -347,10 +355,16 @@ public class IndexController implements Serializable {
                 sb.append(Integer.toBinaryString(by & 0xFF));
             System.out.println("Imagen " + sb.toString());*/
             //ByteArrayEntity  reqEntity = new ByteArrayEntity (buffer.toByteArray());
-            StringEntity reqEntity = new StringEntity("{ \"url\": \"https://scontent-mia3-2.xx.fbcdn.net/v/t1.0-9/18118688_1446362395425071_7485885403947294730_n.jpg?_nc_cat=0&_nc_eui2=v1%3AAeHuX1J3FBKQSvnILlw9xLUYsOnboWgZDe3Xw0pnXMDZ1uDuBAj8ExT3lbHlcBG794UxyVqkyk0k12kJXmd4HdLFmS_0IPoRPCU31HDkmpuaPQ&oh=33ae072b31d876dd4080a1c1e8625c4f&oe=5B51A7E7\" }");
+            
+            
+            //StringEntity reqEntity = new StringEntity("{ \"url\": \"https://scontent-mia3-2.xx.fbcdn.net/v/t1.0-9/18118688_1446362395425071_7485885403947294730_n.jpg?_nc_cat=0&_nc_eui2=v1%3AAeHuX1J3FBKQSvnILlw9xLUYsOnboWgZDe3Xw0pnXMDZ1uDuBAj8ExT3lbHlcBG794UxyVqkyk0k12kJXmd4HdLFmS_0IPoRPCU31HDkmpuaPQ&oh=33ae072b31d876dd4080a1c1e8625c4f&oe=5B51A7E7\" }");
             //StringEntity reqEntity = new StringEntity("{ \"url\": \"http://1.bp.blogspot.com/-bbUDijSShSk/UvPOcFZpDTI/AAAAAAABgT8/USPimXZapcE/s1600/rostros-africanos-al-oleo+(2).jpg\" }");
             //StringEntity reqEntity = new StringEntity("{ \"url\": \"http://208.109.movil.png\" }");
             //StringEntity reqEntity = new StringEntity(sb.toString());
+            
+            System.out.println("AZURE RUTA:" + rutaFinal);
+            File file = new File(rutaFinal);
+            FileEntity reqEntity = new FileEntity(file, "application/octet-stream");
             request.setEntity(reqEntity);
 
             HttpResponse response = httpClient.execute(request);

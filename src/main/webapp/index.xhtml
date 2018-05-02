@@ -10,7 +10,8 @@ and open the template in the editor.
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:o="http://omnifaces.org/ui"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
     <h:head>
         <title>Cargar Imagen</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -24,8 +25,7 @@ and open the template in the editor.
                     <p:tabView id="tabViw" widgetVar="tabViw" dynamic="true" cache="true" >
                         <p:growl id="mensaje" autoUpdate="false" severity="info,fatal" showSummary="true" showDetail="true"/>
                        <p:tab title="CATALOGO DE ARCHIVOS">
-                            <p:fieldset legend="LISTA DE FOTOGRAFIAS INDEXADAS" style="margin: 20px">
-                              
+                            <p:fieldset legend="LISTA DE FOTOGRAFIAS INDEXADAS" style="margin: 20px">                              
                                 <p:commandButton icon="ui-icon-plusthick" value="Nuevo" actionListener="#{indexController.mostrarDialogoImagenes()}" 
                                                  style="margin:10px" update=":frmDialogoImagenes"/>
                                 <p:dataTable id="tablaImagenes" emptyMessage="No existe ninguna Imagen indexada" 
@@ -35,13 +35,13 @@ and open the template in the editor.
                                     </p:column>
                                     <p:column headerText="Analizar" >
                                         <p:commandLink   actionListener="#{indexController.mostrarDialogoAnalisis(pro)}" 
-                                                         style="margin:10px" update=":frmDialogoAnalisis">                                        
-                                            <o:graphicImage style="height:60px;width:60px;" value="#{pro.imagen}" dataURI="true" />
+                                                         style="margin:10px" update=":frmDialogoAnalisis">    
+
+                                            <o:graphicImage style="height:60px;width:60px;" value="#{pro.imagen}" dataURI="true" />                                                
+
                                         </p:commandLink> 
                                     </p:column>
                                 </p:dataTable>
-                               
-                            
                             </p:fieldset>
                             <p:separator />
                             <div style="width: 100%; height: 30px;">
@@ -78,47 +78,52 @@ and open the template in the editor.
                         </h:panelGrid>
                     </h:form>
                 </p:dialog>
-                <p:dialog id="dialogoAnalisis" widgetVar="wdialogoAnalisis" header="Analisis (Imagen indexada)" modal="true" resizable="false" closeOnEscape="true" draggable="false">
-                    <h:form id="frmDialogoAnalisis" enctype="multipart/form-data">
-                        
-                        <h:panelGrid columns="2" id="pgD1" style="margin-bottom:10px" cellpadding="2" > 
+                        <p:dialog id="dialogoAnalisis" widgetVar="wdialogoAnalisis" header="Analisis (Imagen indexada)" modal="true" resizable="false" closeOnEscape="true" draggable="false">
+                        <h:form id="frmDialogoAnalisis" enctype="multipart/form-data">
 
-                            <f:facet name="header">
-                                <o:graphicImage  style="height: 350px; width: 500px" value="#{indexController.dialogoAnalisis.imagen}" dataURI="true"  />
-                            </f:facet>
-                            
-                            <h:outputText value="Nombre" />
-                            <h:outputText value="#{indexController.dialogoAnalisis.nombre}" />
+                            <c:if test="${not empty indexController}">
+                                <c:if test="${not empty indexController.dialogoAnalisis}">
+                                    <c:if test="${not empty indexController.dialogoAnalisis.imagen}">
+                                        <h:panelGrid columns="2" id="pgD1" style="margin-bottom:10px" cellpadding="2" > 
+                                            <f:facet name="header">
+                                                <o:graphicImage  style="height: 350px; width: 500px" value="#{indexController.dialogoAnalisis.imagen}" dataURI="true"  />
+                                            </f:facet>
 
-                            <h:outputText value="Enfado:" />
-                            <h:outputText value="#{indexController.dialogoAnalisis.datos.enfado} %" />
+                                        <h:outputText value="Nombre" />
+                                        <h:outputText value="#{indexController.dialogoAnalisis.nombre}" />
 
-                            <h:outputText value="Desprecio:" />
-                            <h:outputText value="#{indexController.dialogoAnalisis.datos.desprecio} %" />
+                                        <h:outputText value="Enfado:" />
+                                        <h:outputText value="#{indexController.dialogoAnalisis.datos.enfado} %" />
 
-                            <h:outputText value="Disgusto:" />
-                            <h:outputText value="#{indexController.dialogoAnalisis.datos.disgusto} %"/>
+                                        <h:outputText value="Desprecio:" />
+                                        <h:outputText value="#{indexController.dialogoAnalisis.datos.desprecio} %" />
 
-                            <h:outputText value="Miedo:" />
-                            <h:outputText value="#{indexController.dialogoAnalisis.datos.miedo} %" />
-                                                        
-                            <h:outputText value="Felicidad" />
-                            <h:outputText value="#{indexController.dialogoAnalisis.datos.felicidad} %" />
-                                                        
-                            <h:outputText value="Neutral" />
-                            <h:outputText value="#{indexController.dialogoAnalisis.datos.neutral} %" />
-                                                        
-                            <h:outputText value="Tristeza" />
-                            <h:outputText value="#{indexController.dialogoAnalisis.datos.tristeza} %" />
-                            
-                            <h:outputText value="Sorpresa" />
-                            <h:outputText value="#{indexController.dialogoAnalisis.datos.sorpresa} %" />
+                                        <h:outputText value="Disgusto:" />
+                                        <h:outputText value="#{indexController.dialogoAnalisis.datos.disgusto} %"/>
 
-                            <p:commandButton value="Cancelar" icon="ui-icon-close" immediate="true" onclick="PF('wdialogoAnalisis').hide();" />	
-                        </h:panelGrid>
-                 
-                    </h:form>
-                </p:dialog>
+                                        <h:outputText value="Miedo:" />
+                                        <h:outputText value="#{indexController.dialogoAnalisis.datos.miedo} %" />
+
+                                        <h:outputText value="Felicidad" />
+                                        <h:outputText value="#{indexController.dialogoAnalisis.datos.felicidad} %" />
+
+                                        <h:outputText value="Neutral" />
+                                        <h:outputText value="#{indexController.dialogoAnalisis.datos.neutral} %" />
+
+                                        <h:outputText value="Tristeza" />
+                                        <h:outputText value="#{indexController.dialogoAnalisis.datos.tristeza} %" />
+
+                                        <h:outputText value="Sorpresa" />
+                                        <h:outputText value="#{indexController.dialogoAnalisis.datos.sorpresa} %" />
+
+                                        <p:commandButton value="Cancelar" icon="ui-icon-close" immediate="true" onclick="PF('wdialogoAnalisis').hide();" />	
+                                    </h:panelGrid>
+                                </c:if>
+                            </c:if>
+                        </c:if>
+
+                        </h:form>
+                    </p:dialog>
                 <h:outputScript library="js" name="spanishLocales.js"/>
             </ui:define>
         </ui:composition>
