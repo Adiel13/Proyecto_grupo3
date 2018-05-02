@@ -81,46 +81,40 @@ and open the template in the editor.
                         <p:dialog id="dialogoAnalisis" widgetVar="wdialogoAnalisis" header="Analisis (Imagen indexada)" modal="true" resizable="false" closeOnEscape="true" draggable="false">
                         <h:form id="frmDialogoAnalisis" enctype="multipart/form-data">
 
-                            <c:if test="${not empty indexController}">
-                                <c:if test="${not empty indexController.dialogoAnalisis}">
-                                    <c:if test="${not empty indexController.dialogoAnalisis.imagen}">
-                                        <h:panelGrid columns="2" id="pgD1" style="margin-bottom:10px" cellpadding="2" > 
-                                            <f:facet name="header">
-                                                <o:graphicImage  style="height: 350px; width: 500px" value="#{indexController.dialogoAnalisis.imagen}" dataURI="true"  />
-                                            </f:facet>
+                            <h:panelGrid columns="2" id="pgD1" style="margin-bottom:10px" cellpadding="2" > 
+                                <f:facet name="header">
+                                    <o:graphicImage  style="height: 350px; width: 500px" value="#{indexController.dialogoAnalisis.imagen}" dataURI="true"  rendered="#{not empty indexController.dialogoAnalisis.imagen}" />
+                                </f:facet>
 
-                                        <h:outputText value="Nombre" />
-                                        <h:outputText value="#{indexController.dialogoAnalisis.nombre}" />
+                            <h:outputText value="Nombre" />
+                            <h:outputText value="#{indexController.dialogoAnalisis.nombre}" />
 
-                                        <h:outputText value="Enfado:" />
-                                        <h:outputText value="#{indexController.dialogoAnalisis.datos.enfado} %" />
+                            <h:outputText value="Enfado:" />
+                            <h:outputText value="#{indexController.dialogoAnalisis.datos.enfado} %" />
 
-                                        <h:outputText value="Desprecio:" />
-                                        <h:outputText value="#{indexController.dialogoAnalisis.datos.desprecio} %" />
+                            <h:outputText value="Desprecio:" />
+                            <h:outputText value="#{indexController.dialogoAnalisis.datos.desprecio} %" />
 
-                                        <h:outputText value="Disgusto:" />
-                                        <h:outputText value="#{indexController.dialogoAnalisis.datos.disgusto} %"/>
+                            <h:outputText value="Disgusto:" />
+                            <h:outputText value="#{indexController.dialogoAnalisis.datos.disgusto} %"/>
 
-                                        <h:outputText value="Miedo:" />
-                                        <h:outputText value="#{indexController.dialogoAnalisis.datos.miedo} %" />
+                            <h:outputText value="Miedo:" />
+                            <h:outputText value="#{indexController.dialogoAnalisis.datos.miedo} %" />
 
-                                        <h:outputText value="Felicidad" />
-                                        <h:outputText value="#{indexController.dialogoAnalisis.datos.felicidad} %" />
+                            <h:outputText value="Felicidad" />
+                            <h:outputText value="#{indexController.dialogoAnalisis.datos.felicidad} %" />
 
-                                        <h:outputText value="Neutral" />
-                                        <h:outputText value="#{indexController.dialogoAnalisis.datos.neutral} %" />
+                            <h:outputText value="Neutral" />
+                            <h:outputText value="#{indexController.dialogoAnalisis.datos.neutral} %" />
 
-                                        <h:outputText value="Tristeza" />
-                                        <h:outputText value="#{indexController.dialogoAnalisis.datos.tristeza} %" />
+                            <h:outputText value="Tristeza" />
+                            <h:outputText value="#{indexController.dialogoAnalisis.datos.tristeza} %" />
 
-                                        <h:outputText value="Sorpresa" />
-                                        <h:outputText value="#{indexController.dialogoAnalisis.datos.sorpresa} %" />
+                            <h:outputText value="Sorpresa" />
+                            <h:outputText value="#{indexController.dialogoAnalisis.datos.sorpresa} %" />
 
-                                        <p:commandButton value="Cancelar" icon="ui-icon-close" immediate="true" onclick="PF('wdialogoAnalisis').hide();" />	
-                                    </h:panelGrid>
-                                </c:if>
-                            </c:if>
-                        </c:if>
+                            <p:commandButton value="Cancelar" icon="ui-icon-close" immediate="true" onclick="PF('wdialogoAnalisis').hide();" />	
+                        </h:panelGrid>
 
                         </h:form>
                     </p:dialog>
