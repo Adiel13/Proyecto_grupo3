@@ -27,10 +27,11 @@ public class Connection {
 
     public Connection() {
        try {
-            Mongo mongo = new Mongo("localhost", 27017);
+            Mongo mongo = new Mongo("127.0.0.1", 27017);
             BaseDatos = mongo.getDB("MATIC_3");
             coleccion = BaseDatos.getCollection("MATIC_3");
             System.out.println("Se conecto correctamente");
+
 
         } catch (UnknownHostException ex) {
             Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);

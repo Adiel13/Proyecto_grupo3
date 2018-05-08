@@ -50,6 +50,8 @@ import org.json.JSONObject;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.UploadedFile;
+import org.primefaces.model.tagcloud.DefaultTagCloudModel;
+import org.primefaces.model.tagcloud.TagCloudModel;
 
 
 /**
@@ -67,11 +69,16 @@ public class IndexController implements Serializable {
     private UploadedFile uploadFile;
     private String finalUploadFileName;
     List<DatosUsuario> listUsuarios;
+    private TagCloudModel model;
     
     DatosUsuario dialogoAnalisis = null;
     private  InputStream inputStream;
     private FileOutputStream output;
     private InputStream inputImage;
+
+  
+    
+    
 
       
     public DatosUsuario getDialogoAnalisis(){
@@ -161,6 +168,9 @@ public class IndexController implements Serializable {
     }
     
     public void mostrarUsuario(DatosUsuario usuarioParametro){
+       
+        
+        
         BasicDBObject query = new BasicDBObject();
 	query.put("Nombre", usuarioParametro.getNombre());
         
@@ -207,9 +217,9 @@ public class IndexController implements Serializable {
         document.put("Resultado", inc);
         coleccion.insert(document);
         // Guardar imagen en mongo usando GridFS
-        System.out.println("rutaFinal "+ rutaFinal);
-        //File archivo = new File(rutaFinal.replace("Fotografias", "MATIC/Fotografias"));
+       // File archivo = new File(rutaFinal.replace("Fotografias", "MATIC/Fotografias"));
         File archivo = new File(rutaFinal);
+        System.out.println("rutaFinal: "+ rutaFinal);
 	GridFS foto = new GridFS(BaseDatos, "foto");
 	GridFSInputFile archivoGuardar = foto.createFile(archivo);
 	archivoGuardar.setFilename(nombre);
@@ -304,7 +314,7 @@ public class IndexController implements Serializable {
                 rutaArchivoFinal = rutaArchivoFinal.replace(servletContext.getContextPath(), "");
                     
                 rutaFinal = rutaArchivoFinal;
-               
+                rutaFinal = rutaFinal.replace("Fotografias", "MATIC/Fotografias");
              } catch (IOException e) {
                 e.printStackTrace();
                 throw e;
