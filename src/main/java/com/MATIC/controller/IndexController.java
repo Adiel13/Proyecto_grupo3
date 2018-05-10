@@ -21,8 +21,6 @@ import com.mongodb.util.JSON;
 import java.io.File;
 import static java.io.File.separator;
 import java.io.FileOutputStream;
-import java.io.Serializable;
-import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import java.io.IOException;
@@ -41,7 +39,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.FileEntity;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
@@ -50,8 +47,12 @@ import org.json.JSONObject;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.UploadedFile;
-import org.primefaces.model.tagcloud.DefaultTagCloudModel;
-import org.primefaces.model.tagcloud.TagCloudModel;
+import javax.annotation.PostConstruct;
+import java.io.Serializable;
+import org.primefaces.model.chart.Axis;
+import org.primefaces.model.chart.AxisType;
+import org.primefaces.model.chart.BarChartModel;
+import org.primefaces.model.chart.ChartSeries;
 
 
 /**
@@ -69,17 +70,20 @@ public class IndexController implements Serializable {
     private UploadedFile uploadFile;
     private String finalUploadFileName;
     List<DatosUsuario> listUsuarios;
-    private TagCloudModel model;
     
     DatosUsuario dialogoAnalisis = null;
     private  InputStream inputStream;
     private FileOutputStream output;
     private InputStream inputImage;
 
-  
+    private BarChartModel animatedModel2;
+    private Axis yAxis;
     
     
-
+    public BarChartModel getAnimatedModel2() {
+        return animatedModel2;
+    }
+ 
       
     public DatosUsuario getDialogoAnalisis(){
         return dialogoAnalisis;
@@ -138,6 +142,7 @@ public class IndexController implements Serializable {
     public void init() {
         dialogoAnalisis = null;
         cargarLista();
+        createAnimatedModels();
     }
     
     public void cargarLista() {
@@ -226,34 +231,131 @@ public class IndexController implements Serializable {
 	archivoGuardar.save();
         return true;
     }
-
-   /* public void mostrarImagen() throws IOException {
-        
-        String newFileName = "prueba";
-	
-        GridFS foto = new GridFS(BaseDatos, "foto");
-        BasicDBObject allImages = new BasicDBObject();
-	List<GridFSDBFile> listImageForOutput = foto.find(allImages);
-        
-        for(int i=0; i<listImageForOutput.size();i++) {
-            GridFSDBFile imageForOutput = listImageForOutput.get(i);
-            imageForOutput.writeTo("c:\\prueba"+i+".png"); //output to new file
-        }        
-    }*/
-
     
-
-    /*public void probarConexion() {
-          /*
-        pruebas para insertar, modificar, eliminar y mostrar en consola
+    private BarChartModel initBarModel() {
+        String EnfadoS = dialogoAnalisis.getDatos().getEnfado();
+        System.out.println("Enfado"+EnfadoS);
+        String labels[] = {"Enfado", "Desprecio" , "Disgusto","Miedo","Felicidad","Neutral","Tristeza","Sorpresa"};
+        String grupoHora[] = {"1", "2" , "3"};
+        String labelGrupo[] = {"7:00AM - 10:00AM", "10:00AM - 1:00PM", "2:00PM - 5:00PM"};
+        BarChartModel model = new BarChartModel();
         
+        for (int i = 0; i < labels.length; i++) {  
+            ChartSeries series = new ChartSeries();
+            series.setLabel(labels[i]);
+            for (int j = 0; j < grupoHora.length; j++) {
+                float porcentaje = 0;
+                int cantidadPersona = 0;
+                for(int a=0 ; a < listUsuarios.size(); a++ ){
+                    if(listUsuarios.get(a).getNombre().substring(0, 3).equals("AS"+grupoHora[j])){
+                        cantidadPersona++;
+                        switch(i){
+                            case 0:
+                                porcentaje = porcentaje + Float.parseFloat(listUsuarios.get(a).getDatos().getEnfado());
+                            break;
+                            case 1:
+                                porcentaje = porcentaje + Float.parseFloat(listUsuarios.get(a).getDatos().getDesprecio());
+                            break;
+                            case 2:
+                                porcentaje = porcentaje + Float.parseFloat(listUsuarios.get(a).getDatos().getDisgusto());
+                            break;
+                            case 3:
+                                porcentaje = porcentaje + Float.parseFloat(listUsuarios.get(a).getDatos().getMiedo());
+                            break;
+                            case 4:
+                                porcentaje = porcentaje + Float.parseFloat(listUsuarios.get(a).getDatos().getFelicidad());
+                            break;
+                            case 5:
+                                porcentaje = porcentaje + Float.parseFloat(listUsuarios.get(a).getDatos().getNeutral());
+                            break;
+                            case 6:
+                                porcentaje = porcentaje + Float.parseFloat(listUsuarios.get(a).getDatos().getTristeza());
+                            break;
+                            case 7:
+                                porcentaje = porcentaje + Float.parseFloat(listUsuarios.get(a).getDatos().getSorpresa());
+                            break;
+                        }
+                    }
+                }
+                series.set(labelGrupo[j], ((porcentaje / cantidadPersona)));
+                
+            }
+           model.addSeries(series);
+        }
         
        
-        conexion.insertar("prueba insertar");
-       // conexion.actualizar("prueba insertar", "prueba insertar111");
-       // conexion.eliminar("prueba insertar");
-        conexion.mostrar();
-     }*/
+//        BarChartModel model = new BarChartModel();
+//        ChartSeries enfado = new ChartSeries();
+//        enfado.setLabel("Enfado");
+//        enfado.set("7:00AM - 10:00AM", Float.parseFloat(dialogoAnalisis.getDatos().getEnfado()));
+//        /*enfado.set("10:00AM - 1:00PM", 20);
+//        enfado.set("2:00PM - 5:00PM", 30);*/
+//        
+//        ChartSeries desprecio = new ChartSeries();
+//        desprecio.setLabel("Desprecio");
+//        desprecio.set("7:00AM - 10:00AM", Float.parseFloat(dialogoAnalisis.getDatos().getDesprecio()));
+////        desprecio.set("10:00AM - 1:00PM", 100);
+////        desprecio.set("2:00PM - 5:00PM", 44);
+//      
+//        ChartSeries disgusto = new ChartSeries();
+//        disgusto.setLabel("Disgusto");
+//        disgusto.set("7:00AM - 10:00AM", Float.parseFloat(dialogoAnalisis.getDatos().getDisgusto()));
+////        disgusto.set("10:00AM - 1:00PM", 100);
+////        disgusto.set("2:00PM - 5:00PM", 44);
+//       
+//        ChartSeries miedo = new ChartSeries();
+//        miedo.setLabel("Miedo");
+//        miedo.set("7:00AM - 10:00AM", Float.parseFloat(dialogoAnalisis.getDatos().getMiedo()));
+////        miedo.set("10:00AM - 1:00PM", 66);
+////        miedo.set("2:00PM - 5:00PM", 31);
+//       
+//        ChartSeries felicidad = new ChartSeries();
+//        felicidad.setLabel("Felicidad");
+//        felicidad.set("7:00AM - 10:00AM", Float.parseFloat(dialogoAnalisis.getDatos().getFelicidad()));
+////        felicidad.set("10:00AM - 1:00PM", 100);
+////        felicidad.set("2:00PM - 5:00PM", 5);
+//      
+//        ChartSeries neutral = new ChartSeries();
+//        neutral.setLabel("Neutral");
+//        neutral.set("7:00AM - 10:00AM", Float.parseFloat(dialogoAnalisis.getDatos().getNeutral()));
+////        neutral.set("10:00AM - 1:00PM", 100);
+////        neutral.set("2:00PM - 5:00PM", 25);
+//        
+//        ChartSeries tristeza = new ChartSeries();
+//        tristeza.setLabel("Tristeza");
+//        tristeza.set("7:00AM - 10:00AM", Float.parseFloat(dialogoAnalisis.getDatos().getTristeza()));
+////        tristeza.set("10:00AM - 1:00PM", 25);
+////        tristeza.set("2:00PM - 5:00PM", 44);
+//       
+//        ChartSeries sorpresa = new ChartSeries();
+//        sorpresa.setLabel("Sorpresa");
+//        sorpresa.set("7:00AM - 10:00AM", Float.parseFloat(dialogoAnalisis.getDatos().getSorpresa()));
+////        sorpresa.set("10:00AM - 1:00PM", 25);
+////        sorpresa.set("2:00PM - 5:00PM", 44);
+////         
+//        model.addSeries(enfado);
+//        model.addSeries(desprecio);
+//        model.addSeries(disgusto);
+//        model.addSeries(miedo);
+//        model.addSeries(felicidad);
+//        model.addSeries(neutral);
+//        model.addSeries(tristeza);
+//        model.addSeries(sorpresa);
+         
+        return model;
+    }
+    
+    private void createAnimatedModels() {
+        animatedModel2 = initBarModel();
+        animatedModel2.setTitle("Análisis de resultados");
+        animatedModel2.setAnimate(true);
+        animatedModel2.setLegendPosition("ne");
+        yAxis = animatedModel2.getAxis(AxisType.Y);
+        yAxis.setMin(0);
+        yAxis.setMax(100);
+    }
+
+   
     
       public File getCurrentDir() {
         ServletContext servletContext = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
@@ -314,6 +416,7 @@ public class IndexController implements Serializable {
                 rutaArchivoFinal = rutaArchivoFinal.replace(servletContext.getContextPath(), "");
                     
                 rutaFinal = rutaArchivoFinal;
+                /*Esta linea solo va en produccion*/
                 rutaFinal = rutaFinal.replace("Fotografias", "MATIC/Fotografias");
              } catch (IOException e) {
                 e.printStackTrace();
